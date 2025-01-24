@@ -1,4 +1,4 @@
-import { StyleSheet, View, Dimensions, Platform } from 'react-native';
+import { StyleSheet, View, useWindowDimensions, Platform } from 'react-native';
 import Animated, { 
   useAnimatedGestureHandler,
   useAnimatedStyle,
@@ -22,11 +22,6 @@ const MAIN_PAGES = [
 
 const CARDS = ['Card A', 'Card B', 'Card C', 'Card D', 'Card E'];
 
-const { height, width } = Dimensions.get('window');
-const VERTICAL_SNAP_POINTS = MAIN_PAGES.map((_, i) => i * -height);
-const HORIZONTAL_SNAP_POINTS = CARDS.map((_, i) => i * -width);
-
-// Update the lighter shade function to be more subtle
 const getLighterShade = (hexColor: string) => {
   // Convert hex to RGB
   const r = parseInt(hexColor.slice(1, 3), 16);
@@ -45,10 +40,14 @@ const getLighterShade = (hexColor: string) => {
 };
 
 export default function Home() {
+  const { width, height } = useWindowDimensions();
   const translateY = useSharedValue(0);
   const translateX = useSharedValue(0);
   const [activeVerticalIndex, setActiveVerticalIndex] = useState(0);
   const [activeHorizontalIndex, setActiveHorizontalIndex] = useState(0);
+
+  const VERTICAL_SNAP_POINTS = MAIN_PAGES.map((_, i) => i * -height);
+  const HORIZONTAL_SNAP_POINTS = CARDS.map((_, i) => i * -width);
 
   const goToVerticalPage = (nextIndex: number) => {
     if (nextIndex >= 0 && nextIndex < MAIN_PAGES.length) {
@@ -194,10 +193,20 @@ export default function Home() {
       <PanGestureHandler onGestureEvent={gestureHandler}>
         <Animated.View 
           nativeID="pages-container"
-          style={[styles.pagesContainer, animatedStyle]}
+          style={[
+            styles.pagesContainer, 
+            { height: height * MAIN_PAGES.length },
+            animatedStyle
+          ]}
         >
           {MAIN_PAGES.map((mainPage, vIndex) => (
-            <View key={vIndex} style={styles.horizontalContainer}>
+            <View 
+              key={vIndex} 
+              style={[
+                styles.horizontalContainer,
+                { width: width * (CARDS.length + 1) }
+              ]}
+            >
               <Page 
                 name={mainPage.name}
                 color={mainPage.color}
@@ -225,10 +234,9 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   pagesContainer: {
-    height: height * MAIN_PAGES.length,
+    width: '100%',
   },
   horizontalContainer: {
     flexDirection: 'row',
-    width: width * (CARDS.length + 1), // +1 for the main page
   },
 });
