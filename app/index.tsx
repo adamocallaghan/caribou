@@ -11,13 +11,13 @@ import { useState, useEffect } from 'react';
 import Page from '../components/Page';
 
 const MAIN_PAGES = [
-  { name: 'Dashboard', color: '#1a1a1a' },
-  { name: 'Launch', color: '#2a2a2a' },
-  { name: 'Swap', color: '#3a3a3a' },
-  { name: 'Lend', color: '#4a4a4a' },
-  { name: 'Borrow', color: '#5a5a5a' },
-  { name: 'Mint', color: '#6a6a6a' },
-  { name: 'Earn', color: '#7a7a7a' },
+  { name: 'Dashboard', color: '#ff9021' }, // Stronger Orange (was #ffb961)
+  { name: 'Launch', color: '#f15a44' },    // Stronger Coral (was #f3826f)
+  { name: 'Swap', color: '#b84470' },      // Stronger Rose (was #c05c7e)
+  { name: 'Lend', color: '#722d61' },      // Purple
+  { name: 'Borrow', color: '#2d3561' },    // Navy Blue
+  { name: 'Mint', color: '#022e39' },      // Deep Teal
+  { name: 'Earn', color: '#044855' },      // Ocean Blue
 ];
 
 const CARDS = ['Card A', 'Card B', 'Card C', 'Card D', 'Card E'];
@@ -25,6 +25,24 @@ const CARDS = ['Card A', 'Card B', 'Card C', 'Card D', 'Card E'];
 const { height, width } = Dimensions.get('window');
 const VERTICAL_SNAP_POINTS = MAIN_PAGES.map((_, i) => i * -height);
 const HORIZONTAL_SNAP_POINTS = CARDS.map((_, i) => i * -width);
+
+// Update the lighter shade function to be more subtle
+const getLighterShade = (hexColor: string) => {
+  // Convert hex to RGB
+  const r = parseInt(hexColor.slice(1, 3), 16);
+  const g = parseInt(hexColor.slice(3, 5), 16);
+  const b = parseInt(hexColor.slice(5, 7), 16);
+
+  // Make it lighter with a smaller factor (0.15 = 15% lighter)
+  const factor = 0.15;
+  const lighterR = Math.min(255, r + (255 - r) * factor);
+  const lighterG = Math.min(255, g + (255 - g) * factor);
+  const lighterB = Math.min(255, b + (255 - b) * factor);
+
+  // Convert back to hex
+  const toHex = (n: number) => Math.round(n).toString(16).padStart(2, '0');
+  return `#${toHex(lighterR)}${toHex(lighterG)}${toHex(lighterB)}`;
+};
 
 export default function Home() {
   const translateY = useSharedValue(0);
@@ -189,7 +207,7 @@ export default function Home() {
                 <Page
                   key={`${vIndex}-${hIndex}`}
                   name={`${mainPage.name} - ${card}`}
-                  color={mainPage.color}
+                  color={getLighterShade(mainPage.color)}
                   isActive={vIndex === activeVerticalIndex && hIndex + 1 === activeHorizontalIndex}
                 />
               ))}
