@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Dimensions, Platform, useWindowDimensions } from 'react-native';
+import { View, Text, StyleSheet, Platform, useWindowDimensions } from 'react-native';
 
 interface PageProps {
   name: string;
@@ -19,13 +19,18 @@ export default function Page({ name, color, isActive }: PageProps) {
         height: height,
       }
     ]}>
-      <View style={styles.contentContainer}>
+      {/* Main content container */}
+      <View style={styles.mainContent}>
         <Text style={[
           styles.text,
           isSmallDevice && styles.smallText
         ]}>
           {name}
         </Text>
+      </View>
+
+      {/* Bottom hint container */}
+      <View style={styles.hintContainer}>
         <Text style={[
           styles.hint,
           isSmallDevice && styles.smallHint
@@ -40,13 +45,15 @@ export default function Page({ name, color, isActive }: PageProps) {
 
 const styles = StyleSheet.create({
   page: {
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
   },
-  contentContainer: {
-    width: '80%',
+  mainContent: {
+    flex: 1,
+    justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
+    width: '100%',
+    paddingHorizontal: 20,
   },
   text: {
     fontSize: 32,
@@ -57,15 +64,18 @@ const styles = StyleSheet.create({
   smallText: {
     fontSize: 24,
   },
+  hintContainer: {
+    width: '100%',
+    paddingBottom: 40,
+    paddingHorizontal: 20,
+  },
   hint: {
-    position: 'absolute',
-    bottom: 40,
     color: 'rgba(255,255,255,0.6)',
     fontSize: 14,
     textAlign: 'center',
   },
   smallHint: {
     fontSize: 12,
-    bottom: 20,
+    paddingBottom: 20,
   },
 }); 
