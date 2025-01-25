@@ -11,13 +11,13 @@ import { useState, useEffect } from 'react';
 import Page from '../components/Page';
 
 const MAIN_PAGES = [
-  { name: 'Dashboard', color: '#ff9021' }, // Stronger Orange (was #ffb961)
-  { name: 'Launch', color: '#f15a44' },    // Stronger Coral (was #f3826f)
-  { name: 'Swap', color: '#b84470' },      // Stronger Rose (was #c05c7e)
-  { name: 'Lend', color: '#722d61' },      // Purple
-  { name: 'Borrow', color: '#2d3561' },    // Navy Blue
-  { name: 'Mint', color: '#022e39' },      // Deep Teal
-  { name: 'Earn', color: '#044855' },      // Ocean Blue
+  { name: 'Dashboard', color: '#FFA6A6', textColor: '#222222' }, // Light Pink & Dark Grey
+  { name: 'Launch', color: '#96DCED', textColor: '#3D3D3D' },    // Light Blue & Dark Grey
+  { name: 'Swap', color: '#4D1A28', textColor: '#EBADCB' },      // Deep Red & Light Pink
+  { name: 'Lend', color: '#cad9e5', textColor: '#222222' },      // Light Grey & Dark Grey
+  { name: 'Borrow', color: '#143199', textColor: '#dee6ff' },    // Deep Blue & Light Blue
+  { name: 'Mint', color: '#222222', textColor: '#FF4445' },      // Dark Grey & Red
+  { name: 'Earn', color: '#353f54', textColor: '#0AEB9A' },      // Navy & Green
 ];
 
 const CARDS = ['Card A', 'Card B', 'Card C', 'Card D', 'Card E'];
@@ -210,6 +210,7 @@ export default function Home() {
               <Page 
                 name={mainPage.name}
                 color={mainPage.color}
+                textColor={mainPage.textColor}
                 isActive={vIndex === activeVerticalIndex && activeHorizontalIndex === 0}
               />
               {CARDS.map((card, hIndex) => (
@@ -217,6 +218,7 @@ export default function Home() {
                   key={`${vIndex}-${hIndex}`}
                   name={`${mainPage.name} - ${card}`}
                   color={getLighterShade(mainPage.color)}
+                  textColor={mainPage.textColor}
                   isActive={vIndex === activeVerticalIndex && hIndex + 1 === activeHorizontalIndex}
                 />
               ))}

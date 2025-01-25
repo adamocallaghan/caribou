@@ -3,10 +3,11 @@ import { View, Text, StyleSheet, Platform, useWindowDimensions } from 'react-nat
 interface PageProps {
   name: string;
   color: string;
+  textColor: string;
   isActive?: boolean;
 }
 
-export default function Page({ name, color, isActive }: PageProps) {
+export default function Page({ name, color, textColor, isActive }: PageProps) {
   const { width, height } = useWindowDimensions();
   const isSmallDevice = width < 380;
 
@@ -23,6 +24,7 @@ export default function Page({ name, color, isActive }: PageProps) {
       <View style={styles.mainContent}>
         <Text style={[
           styles.text,
+          { color: textColor },
           isSmallDevice && styles.smallText
         ]}>
           {name}
@@ -33,6 +35,7 @@ export default function Page({ name, color, isActive }: PageProps) {
       <View style={styles.hintContainer}>
         <Text style={[
           styles.hint,
+          { color: `${textColor}99` },
           isSmallDevice && styles.smallHint
         ]}>
           {Platform.OS === 'web' ? 'Use ↑↓ arrows, mouse wheel, or drag to navigate' : 'Swipe to navigate'}
@@ -58,7 +61,6 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: 'white',
     textAlign: 'center',
   },
   smallText: {
@@ -70,7 +72,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   hint: {
-    color: 'rgba(255,255,255,0.6)',
     fontSize: 14,
     textAlign: 'center',
   },
