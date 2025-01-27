@@ -15,9 +15,14 @@
     "preset": "jest-expo"
   },
   "dependencies": {
+    "@etherspot/prime-sdk": "^1.9.2",
     "@expo/vector-icons": "^14.0.2",
     "@react-navigation/bottom-tabs": "^7.2.0",
     "@react-navigation/native": "^7.0.14",
+    "@web3auth/base": "^5.2.0",
+    "@web3auth/no-modal": "^5.2.0",
+    "@web3auth/openlogin-adapter": "^5.2.0",
+    "ethers": "^6.13.5",
     "expo": "~52.0.27",
     "expo-blur": "~14.0.2",
     "expo-constants": "~17.0.4",
