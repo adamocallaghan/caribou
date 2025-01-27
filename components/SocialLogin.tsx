@@ -6,6 +6,7 @@ import { LOGIN_PROVIDER } from '@toruslabs/base-controllers';
 import { PrimeSdk, Web3WalletProvider } from '@etherspot/prime-sdk';
 import { ethers } from 'ethers';
 import { View, Text, TouchableOpacity, ActivityIndicator, StyleSheet } from 'react-native';
+import Constants from 'expo-constants';
 
 const SocialLogin = () => {
   const [isConnecting, setIsConnecting] = React.useState(false);
@@ -13,31 +14,58 @@ const SocialLogin = () => {
   const [walletAddress, setWalletAddress] = React.useState('');
   const web3authRef = useRef<Web3AuthNoModal | null>(null);
   const [isInitialized, setIsInitialized] = React.useState(false);
+  const initializationPromiseRef = useRef<Promise<void> | null>(null);
 
   useEffect(() => {
     let mounted = true;
 
     const init = async () => {
       try {
-        console.log('Chain ID:', process.env.EXPO_PUBLIC_WEB3AUTH_CHAIN_ID_HEX);
-        console.log('Client ID:', process.env.EXPO_PUBLIC_WEB3AUTH_CLIENT_ID);
+        const clientId = "BIzmaRSq_wpNzDdwG29oAlwwAei3roesUUrWTtFUCmsALGQnC2YhlFYLzcRKut48UQBUOtAJKFepAzdhKRls6os";
+        const chainId = "0x8274f";
+        console.log('Chain ID:', chainId);
+        console.log('Client ID:', clientId);
+
+        if (!clientId) {
+          throw new Error('Web3Auth Client ID is not configured');
+        }
 
         const web3authInstance = new Web3AuthNoModal({
           chainConfig: {
             chainNamespace: CHAIN_NAMESPACES.EIP155,
-            chainId: process.env.EXPO_PUBLIC_WEB3AUTH_CHAIN_ID_HEX || '0x1',
+            chainId: chainId,
+            rpcTarget: "https://sepolia-rpc.scroll.io",
           },
-          clientId: process.env.EXPO_PUBLIC_WEB3AUTH_CLIENT_ID || '',
+          clientId: clientId,
+          web3AuthNetwork: "testnet",
         });
 
-        const openloginAdapter = new OpenloginAdapter();
+        const openloginAdapter = new OpenloginAdapter({
+          adapterSettings: {
+            network: "testnet",
+            clientId: clientId,
+            uxMode: "popup",
+          },
+        });
+
         web3authInstance.configureAdapter(openloginAdapter);
-        await web3authInstance.init();
-        
-        if (mounted) {
-          web3authRef.current = web3authInstance;
-          setIsInitialized(true);
-        }
+
+        console.log("Starting Web3Auth initialization...");
+        initializationPromiseRef.current = (async () => {
+          try {
+            await web3authInstance.init();
+            console.log("Web3Auth initialized successfully");
+            if (mounted) {
+              web3authRef.current = web3authInstance;
+              setIsInitialized(true);
+            }
+          } catch (err) {
+            console.error("Web3Auth initialization failed:", err);
+            throw err;
+          }
+        })();
+
+        await initializationPromiseRef.current;
       } catch (error) {
         console.error('Web3Auth initialization error:', error);
         if (mounted) {
@@ -64,12 +92,27 @@ const SocialLogin = () => {
   };
 
   const loginWithProvider = async (loginProvider: string) => {
-    if (!web3authRef.current || isConnecting || !isInitialized) return;
+    if (!web3authRef.current || isConnecting || !isInitialized) {
+      console.log("Early return conditions:", {
+        noWeb3Auth: !web3authRef.current,
+        isConnecting,
+        notInitialized: !isInitialized
+      });
+      return;
+    }
+
     setIsConnecting(true);
     setErrorMessage('');
     setWalletAddress('');
 
     try {
+      console.log("Starting login process...");
+      if (initializationPromiseRef.current) {
+        console.log("Waiting for initialization to complete...");
+        await initializationPromiseRef.current;
+      }
+
+      console.log("Connecting to provider:", loginProvider);
       await web3authRef.current.connectTo(WALLET_ADAPTERS.OPENLOGIN, {
         loginProvider,
         mfaLevel: 'none',
@@ -83,7 +126,7 @@ const SocialLogin = () => {
       await mappedProvider.refresh();
 
       const etherspotPrimeSdk = new PrimeSdk(mappedProvider, {
-        chainId: ethers.BigNumber.from(process.env.EXPO_PUBLIC_WEB3AUTH_CHAIN_ID_HEX as string).toNumber()
+        chainId: ethers.BigNumber.from(chainId).toNumber()
       });
 
       const address = await etherspotPrimeSdk.getCounterFactualAddress();
