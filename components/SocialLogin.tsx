@@ -35,6 +35,10 @@ const SocialLogin = () => {
             chainNamespace: CHAIN_NAMESPACES.EIP155,
             chainId: chainId,
             rpcTarget: "https://sepolia-rpc.scroll.io",
+            displayName: "Scroll Sepolia",
+            blockExplorer: "https://sepolia.scrollscan.com/",
+            ticker: "ETH",
+            tickerName: "Ethereum",
           },
           clientId: clientId,
           web3AuthNetwork: "testnet",
@@ -42,9 +46,11 @@ const SocialLogin = () => {
 
         const openloginAdapter = new OpenloginAdapter({
           adapterSettings: {
-            network: "testnet",
-            clientId: clientId,
-            uxMode: "popup",
+            whiteLabel: {
+              name: "Caribou App",
+              defaultLanguage: "en",
+              dark: false,
+            },
           },
         });
 
